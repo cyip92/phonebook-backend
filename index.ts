@@ -1,10 +1,17 @@
 import type { Request, Response } from "express";
 import express from "express";
+import morgan from "morgan";
 
 import generateInfo from "./info";
 
+morgan.token("sensitiveData", function (req: Request) {
+  return req.sensitiveData;
+});
+
 const app = express();
 app.use(express.json());
+app.use(morgan(":method :url :status :res[content-length] - :response-time ms :sensitiveData"));
+app.use(getData);
 
 let persons = [
   { 
@@ -38,7 +45,6 @@ app.get("/api/persons", (req: Request, res: Response) => {
 });
 
 app.post("/api/persons", (req: Request, res: Response) => {
-  console.log(req.body)
   const data = req.body;
 
   let error = "";
@@ -82,6 +88,17 @@ app.delete("/api/persons/:id", (req: Request, res: Response) => {
   persons = persons.filter(p => p.id !== id);
   res.status(204).end();
 });
+
+const unknownEndpoint = (req: Request, res: Response) => {
+  res.status(404).send({ error: "Unknown Endpoint" })
+};
+
+app.use(unknownEndpoint);
+
+function getData(req: Request, res: Response, next:any) {
+  req.sensitiveData = JSON.stringify(req.body);
+  next();
+}
 
 const PORT = 3001
 app.listen(PORT, () => {

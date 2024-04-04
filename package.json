@@ -16,7 +16,8 @@
   "author": "cyip92",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.4",
