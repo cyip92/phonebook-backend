@@ -1,6 +1,8 @@
 import type { Request, Response } from "express";
 import express from "express";
 
+import generateInfo from "./info";
+
 const app = express();
 
 let persons = [
@@ -25,6 +27,10 @@ let persons = [
     "number": "39-23-6423122"
   }
 ];
+
+app.get("/info", (req: Request, res: Response) => {
+  res.send(generateInfo(persons));
+});
 
 app.get("/api/persons", (req: Request, res: Response) => {
   res.json(persons);
