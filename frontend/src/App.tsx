@@ -34,6 +34,11 @@ const App = () => {
         setTimeout(() => setNotificationText(""), 5000);
         const newPerson = { ...payload, id: response.id };
         setPersons(persons.concat(newPerson));
+      })
+      .catch(err => {
+        setIsErrorNotification(true);
+        setNotificationText(`Error from server: ${err.response.data.error}`);
+        setTimeout(() => setNotificationText(""), 5000);
       });
   };
   const modifyPersonCallback = ( newName: string, newNumber: string ) => {

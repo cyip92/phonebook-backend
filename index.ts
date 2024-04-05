@@ -1,5 +1,5 @@
 import "dotenv/config.js";
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
@@ -68,10 +68,27 @@ app.post("/api/persons", (req: Request, res: Response) => {
   });
 });
 
-app.get("/api/persons/:id", (req: Request, res: Response) => {
+app.get("/api/persons/:id", (req: Request, res: Response, next: NextFunction ) => {
   Person.findById(req.params.id)
+    .then(entry => {
+      if (entry) {
+        res.json(entry);
+      } else {
+        res.status(404).end();
+      }
+    })
+    .catch(error => next(error))
+});
+
+app.put("/api/persons/:id", (req: Request, res: Response, next: NextFunction ) => {
+  const data = req.body;
+  const newPerson = {
+    name: data.name,
+    number: data.number,
+  };
+  Person.findByIdAndUpdate(req.params.id, newPerson, { new: true })
     .then(entry => { res.json(entry); })
-    .catch(error => { res.status(404).end(); })
+    .catch(error => next(error))
 });
 
 app.delete("/api/persons/:id", (req: Request, res: Response) => {
@@ -83,6 +100,16 @@ const unknownEndpoint = (req: Request, res: Response) => {
   res.status(404).send({ error: "Unknown Endpoint" })
 };
 app.use(unknownEndpoint);
+
+// Error handler must be the last middleware loaded, and must come after all routes
+const errorHandler = ( error: Error , req: Request, res: Response, next: NextFunction ) => {
+  console.error(error.message);
+  if (error.name === "CastError") {
+    return res.status(400).send({ error: "Malformed ID" })
+  } 
+  next(error);
+};
+app.use(errorHandler);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
