@@ -22,20 +22,18 @@ const App = () => {
   const updateSearch = ( searchStr: string ) => setSearch(searchStr);
   const rejectDuplicate = ( newName: string ) => !persons.map(p => p.name).some(n => n === newName);
   const addPersonCallback = ( newName: string, newNumber: string ) => {
-    // Deleting entries can cause gaps in the ID, so we make new entries with an ID higher than all existing ones
-    const highestID = persons.map(p => Number(p.id)).reduce((a, b) => Math.max(a, b), 0);
-    const newPerson = {
+    const payload = {
       name: newName,
       number: newNumber,
-      id: String(highestID + 1)
     };
-    setPersons(persons.concat(newPerson));
     personService
-      .createEntry(newPerson)
+      .createEntry(payload)
       .then(response => {
         setIsErrorNotification(false);
         setNotificationText(`Added phone number for ${response.name}`);
         setTimeout(() => setNotificationText(""), 5000);
+        const newPerson = { ...payload, id: response.id };
+        setPersons(persons.concat(newPerson));
       });
   };
   const modifyPersonCallback = ( newName: string, newNumber: string ) => {
@@ -52,9 +50,9 @@ const App = () => {
         setNotificationText(`Modified phone number for ${response.name}`);
         setTimeout(() => setNotificationText(""), 5000);
       })
-      .catch(() => {
+      .catch(response => {
         setIsErrorNotification(true);
-        setNotificationText(`${modifiedEntry.name} was not found on the server!`);
+        setNotificationText(`Error from server: ${response.body}`);
         setTimeout(() => setNotificationText(""), 5000);
       });
   };
