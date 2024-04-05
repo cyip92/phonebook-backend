@@ -9,8 +9,10 @@ morgan.token("sensitiveData", function (req: Request) {
   return req.sensitiveData;
 });
 
+// Add all middleware
 const app = express();
 app.use(express.json());
+app.use(express.static("dist"));
 app.use(morgan(":method :url :status :res[content-length] - :response-time ms :sensitiveData"));
 app.use(getData);
 app.use(cors());
