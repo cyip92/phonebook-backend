@@ -47,17 +47,17 @@ const App = () => {
       ...oldEntry,
       number: newNumber
     };
-    setPersons(persons.map(p => p.id === oldEntry.id ? modifiedEntry : p));
     personService
       .modifyEntry(oldEntry.id, modifiedEntry)
       .then(response => {
         setIsErrorNotification(false);
         setNotificationText(`Modified phone number for ${response.name}`);
         setTimeout(() => setNotificationText(""), 5000);
+        setPersons(persons.map(p => p.id === oldEntry.id ? modifiedEntry : p));
       })
-      .catch(response => {
+      .catch(err => {
         setIsErrorNotification(true);
-        setNotificationText(`Error from server: ${response.body}`);
+        setNotificationText(`Error from server: ${err.response.data.error}`);
         setTimeout(() => setNotificationText(""), 5000);
       });
   };

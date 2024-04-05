@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build:ui": "rm -rf dist && cd ./frontend && npm run build && cp -r dist ../",
-    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
+    "deploy:full": "npm run build:ui && git add . && git commit -m \"Deploy App to Render\" && git push",
     "start": "npx tsx index.ts",
     "dev": "tsx watch index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"

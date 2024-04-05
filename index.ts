@@ -40,7 +40,7 @@ app.get("/api/persons", (req: Request, res: Response) => {
   });
 });
 
-app.post("/api/persons", (req: Request, res: Response) => {
+app.post("/api/persons", (req: Request, res: Response, next: NextFunction ) => {
   const data = req.body;
   Person.find({}).then(entries => {
     let error = "";
@@ -61,7 +61,8 @@ app.post("/api/persons", (req: Request, res: Response) => {
       });
       newPerson
         .save()
-        .then(savedNote => { res.json(savedNote) });
+        .then(savedNote => { res.json(savedNote) })
+        .catch(error => next(error));
     } else {
       res.status(400).json({ error });
     }
@@ -86,7 +87,7 @@ app.put("/api/persons/:id", (req: Request, res: Response, next: NextFunction ) =
     name: data.name,
     number: data.number,
   };
-  Person.findByIdAndUpdate(req.params.id, newPerson, { new: true })
+  Person.findByIdAndUpdate(req.params.id, newPerson, { new: true, runValidators: true, context: "query" })
     .then(entry => { res.json(entry); })
     .catch(error => next(error))
 });
@@ -106,6 +107,8 @@ const errorHandler = ( error: Error , req: Request, res: Response, next: NextFun
   console.error(error.message);
   if (error.name === "CastError") {
     return res.status(400).send({ error: "Malformed ID" })
+  } else if (error.name === "ValidationError") {
+    return res.status(400).json({ error: error.message })
   } 
   next(error);
 };
