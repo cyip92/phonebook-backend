@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import express from "express";
 import morgan from "morgan";
+import cors from "cors";
 
 import generateInfo from "./info";
 
@@ -12,6 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(morgan(":method :url :status :res[content-length] - :response-time ms :sensitiveData"));
 app.use(getData);
+app.use(cors());
 
 let persons = [
   { 
@@ -92,15 +94,16 @@ app.delete("/api/persons/:id", (req: Request, res: Response) => {
 const unknownEndpoint = (req: Request, res: Response) => {
   res.status(404).send({ error: "Unknown Endpoint" })
 };
-
 app.use(unknownEndpoint);
 
+// This is used to display raw data for HTTP requests as per exercise 3.8
+// It's bad practice to do this in general because of security reasons
 function getData(req: Request, res: Response, next:any) {
   req.sensitiveData = JSON.stringify(req.body);
   next();
 }
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 });
