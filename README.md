@@ -1,3 +1,1 @@
-Since I'm also using the course to learn and use TypeScript instead of plain JavaScript, a few things have already diverged from the code examples given within Full Stack Open. I'm preemptively adding this file to denote any potentially significant differences just in case it becomes necessary in later exercises.
-
-3.1 : Needed to add tsx as a dependency for proper type specifications in HTTP requests. This has functionality which substitutes for nodemon in terms of automatically refreshing on file edits.
+This repo is currently being deployed to https://phonebook-backend-0m2s.onrender.com/index.html
