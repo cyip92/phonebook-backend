@@ -12,14 +12,14 @@ const SearchForm = ({ searchCallback } : { searchCallback: (arg: string) => void
   return (
     <>
       <div>
-        Filter names with: 
+        Filter names with:
         <input
           value={newSearch}
           onChange={handleSearchChange}
         />
       </div>
     </>
-  )
+  );
 };
 
 export default SearchForm;

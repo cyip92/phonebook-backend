@@ -12,7 +12,7 @@ import Person from "./models/person";
 morgan.token("sensitiveData", function (req: Request) {
   return req.sensitiveData;
 });
-function getData(req: Request, res: Response, next:any) {
+function getData(req: Request, res: Response, next: NextFunction) {
   // The id is created on MongoDB now, so we want to remove it from the morgan logging
   const filteredData = { ...req.body };
   filteredData.id = undefined;
@@ -94,7 +94,7 @@ app.put("/api/persons/:id", (req: Request, res: Response, next: NextFunction ) =
 
 app.delete("/api/persons/:id", (req: Request, res: Response) => {
   Person.findByIdAndDelete(req.params.id)
-    .then(result => { res.status(204).end(); });
+    .then(() => { res.status(204).end(); });
 });
 
 const unknownEndpoint = (req: Request, res: Response) => {
@@ -109,7 +109,7 @@ const errorHandler = ( error: Error , req: Request, res: Response, next: NextFun
     return res.status(400).send({ error: "Malformed ID" })
   } else if (error.name === "ValidationError") {
     return res.status(400).json({ error: error.message })
-  } 
+  }
   next(error);
 };
 app.use(errorHandler);
